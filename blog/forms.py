@@ -1,7 +1,7 @@
 ﻿from django import forms
 from django.utils.text import slugify
 
-from .models import Comment, Post
+from .models import Category, Comment, Post
 
 
 class PostForm(forms.ModelForm):
@@ -33,3 +33,15 @@ class CommentForm(forms.ModelForm):
         if len(text) < 3:
             raise forms.ValidationError("Комментарий должен содержать минимум 3 символа.")
         return text
+
+
+class CategoryForm(forms.ModelForm):
+    class Meta:
+        model = Category
+        fields = ("name", "slug")
+
+    def clean_slug(self):
+        slug = self.cleaned_data.get("slug", "").strip()
+        if not slug:
+            return ""
+        return slugify(slug)[:120]

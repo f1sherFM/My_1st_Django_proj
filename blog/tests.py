@@ -217,3 +217,16 @@ class AdminActionTests(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "comments")
+
+
+class CategoryCreateTests(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username="writer", email="writer@example.com", password="pass12345")
+
+    def test_authenticated_user_can_create_category_with_auto_slug(self):
+        self.client.login(username="writer", password="pass12345")
+        response = self.client.post(reverse("blog:category_create"), {"name": "Data Science", "slug": ""})
+
+        self.assertRedirects(response, reverse("blog:category_list"))
+        category = Category.objects.get(name="Data Science")
+        self.assertEqual(category.slug, "data-science")

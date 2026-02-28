@@ -5,7 +5,7 @@ from django.utils.text import slugify
 
 class Category(models.Model):
     name = models.CharField(max_length=100, unique=True)
-    slug = models.SlugField(max_length=120, unique=True)
+    slug = models.SlugField(max_length=120, unique=True, blank=True)
 
     class Meta:
         ordering = ("name",)
@@ -13,6 +13,25 @@ class Category(models.Model):
 
     def __str__(self):
         return self.name
+
+    def save(self, *args, **kwargs):
+        # Автослаг для категории нужен, чтобы пользователь мог создать ее без ручного ввода slug.
+        if not self.slug:
+            self.slug = self._build_unique_slug()
+        super().save(*args, **kwargs)
+
+    def _build_unique_slug(self):
+        base_slug = (slugify(self.name) or "category")[:120]
+        candidate = base_slug
+        counter = 2
+
+        while Category.objects.exclude(pk=self.pk).filter(slug=candidate).exists():
+            suffix = f"-{counter}"
+            trimmed_base = base_slug[: 120 - len(suffix)]
+            candidate = f"{trimmed_base}{suffix}"
+            counter += 1
+
+        return candidate
 
 
 class Post(models.Model):

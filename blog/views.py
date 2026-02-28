@@ -6,7 +6,7 @@ from django.views import View
 from django.views.generic import CreateView, DeleteView, DetailView, ListView, UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 
-from .forms import CommentForm, PostForm
+from .forms import CategoryForm, CommentForm, PostForm
 from .models import Category, Comment, Post
 
 
@@ -41,6 +41,13 @@ class CategoryListView(ListView):
         return Category.objects.annotate(
             published_posts_count=Count("posts", filter=Q(posts__is_published=True))
         )
+
+
+class CategoryCreateView(LoginRequiredMixin, CreateView):
+    model = Category
+    form_class = CategoryForm
+    template_name = "blog/category_form.html"
+    success_url = reverse_lazy("blog:category_list")
 
 
 class CategoryPostListView(ListView):
