@@ -27,9 +27,9 @@
         {{ form.category }}
         {{ form.category.errors }}<br>
         {% if form.no_categories %}
-            <small>Сначала создайте хотя бы одну категорию: <a href="{% url 'blog:category_create' %}">Создать категорию</a>.</small>
+            <small>Сначала создайте хотя бы одну категорию: <a href="/category/create/">Создать категорию</a>.</small>
         {% else %}
-            <small>Нет нужной категории? <a href="{% url 'blog:category_create' %}">Создать категорию</a>.</small>
+            <small>Нет нужной категории? <a href="/category/create/">Создать категорию</a>.</small>
         {% endif %}
     </p>
     <p>
