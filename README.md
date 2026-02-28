@@ -39,10 +39,10 @@
 ## Основные URL
 - `/` — список опубликованных постов
 - `/categories/` — список категорий
-- `/category/<slug>` — посты категории
-- `/post/create` — создание поста
-- `/post/<slug>` — детальная страница
-- `/register`, `/login`, `/logout`, `/profile/<username>`
+- `/category/<slug:slug>/` — посты категории
+- `/post/create/` — создание поста
+- `/post/<slug:slug>/` — детальная страница
+- `/register/`, `/login/`, `/logout/`, `/profile/<str:username>/`
 - `/admin/` — админка
 
 ## Важные технические решения
@@ -121,3 +121,10 @@ python manage.py test
 8. Поиск:
    - проверить поиск по `title/content` через `?q=`;
    - проверить, что пустой/пробельный `q` ведет себя как обычный список.
+
+## Что исправлено (Repo-fix)
+- Нормализованы URL-маршруты `accounts` и `blog`: добавлены корректные path converters и хвостовые `/`.
+- `logout` закреплен как POST-only endpoint (`CustomLogoutView.http_method_names`), в `base.html` остается form + CSRF.
+- `requirements.txt` приведен к валидному виду для `pip install -r` (по одной зависимости на строку).
+- Подтверждена корректность настроек `MEDIA/STATIC` и безопасного показа аватара в шаблоне профиля.
+- Выполнены проверки: `compileall`, `check`, `makemigrations`, `migrate`, `test`, smoke `runserver`.

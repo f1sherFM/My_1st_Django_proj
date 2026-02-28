@@ -25,7 +25,8 @@ class CustomLoginView(LoginView):
 
 
 class CustomLogoutView(LogoutView):
-    # LogoutView в Django принимает POST, это безопаснее, чем GET-логаут.
+    # Явно ограничиваем метод POST, чтобы исключить случайный logout по GET.
+    http_method_names = ["post", "options"]
     next_page = reverse_lazy("blog:post_list")
 
 
