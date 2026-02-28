@@ -1,0 +1,11 @@
+﻿{% extends 'base.html' %}
+{% block title %}Профиль {{ profile_user.username }}{% endblock %}
+{% block content %}
+<h1>Профиль {{ profile_user.username }}</h1>
+{% if profile_user.profile.avatar %}
+    <img src="{{ profile_user.profile.avatar.url }}" alt="avatar" class="avatar">
+{% endif %}
+<p><strong>Email:</strong> {{ profile_user.email }}</p>
+<p><strong>О себе:</strong> {{ profile_user.profile.bio|default:'Пока пусто' }}</p>
+<p><strong>Дата создания профиля:</strong> {{ profile_user.profile.created_at }}</p>
+{% endblock %}

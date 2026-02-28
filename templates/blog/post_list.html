@@ -1,0 +1,23 @@
+﻿{% extends 'base.html' %}
+{% block title %}Посты{% endblock %}
+{% block content %}
+<h1>Посты</h1>
+<form method="get" class="search-form">
+    <input type="text" name="q" placeholder="Поиск по постам" value="{{ q }}">
+    <button type="submit">Найти</button>
+</form>
+
+{% for post in posts %}
+<article class="card">
+    <h2><a href="{% url 'blog:post_detail' post.slug %}">{{ post.title }}</a></h2>
+    <p class="meta">{{ post.created_at }} · {{ post.author.username }} · 
+        <a href="{% url 'blog:category_posts' post.category.slug %}">{{ post.category.name }}</a>
+    </p>
+    <p>{{ post.content|truncatewords:30 }}</p>
+</article>
+{% empty %}
+<p>Посты не найдены.</p>
+{% endfor %}
+
+{% include 'blog/pagination.html' %}
+{% endblock %}

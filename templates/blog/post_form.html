@@ -1,0 +1,11 @@
+﻿{% extends 'base.html' %}
+{% block title %}{% if form.instance.pk %}Редактирование{% else %}Создание{% endif %} поста{% endblock %}
+{% block content %}
+<!-- Один шаблон для create/edit снижает дублирование и риск расхождения UI. -->
+<h1>{% if form.instance.pk %}Редактирование поста{% else %}Создание поста{% endif %}</h1>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Сохранить</button>
+</form>
+{% endblock %}

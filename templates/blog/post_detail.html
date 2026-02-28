@@ -1,0 +1,44 @@
+﻿{% extends 'base.html' %}
+{% block title %}{{ post.title }}{% endblock %}
+{% block content %}
+<article class="card">
+    <h1>{{ post.title }}</h1>
+    <p class="meta">{{ post.created_at }} · {{ post.author.username }} ·
+        <a href="{% url 'blog:category_posts' post.category.slug %}">{{ post.category.name }}</a>
+    </p>
+    <div>{{ post.content|linebreaks }}</div>
+
+    {% if user == post.author %}
+        <div class="actions">
+            <a href="{% url 'blog:post_edit' post.slug %}">Редактировать</a>
+            <a href="{% url 'blog:post_delete' post.slug %}">Удалить</a>
+        </div>
+    {% endif %}
+</article>
+
+<section class="card">
+    <h2>Комментарии</h2>
+    {% for comment in approved_comments %}
+        <div class="comment">
+            <p><strong>{{ comment.author.username }}</strong> · {{ comment.created_at }}</p>
+            <p>{{ comment.text|linebreaks }}</p>
+        </div>
+    {% empty %}
+        <p>Пока нет одобренных комментариев.</p>
+    {% endfor %}
+</section>
+
+{% if user.is_authenticated %}
+<section class="card">
+    <h2>Оставить комментарий</h2>
+    <form method="post" action="{% url 'blog:comment_create' post.slug %}">
+        {% csrf_token %}
+        {{ comment_form.as_p }}
+        <button type="submit">Отправить</button>
+    </form>
+    <p class="hint">Комментарий отправится на модерацию.</p>
+</section>
+{% else %}
+<p>Чтобы комментировать, <a href="{% url 'login' %}">войдите</a>.</p>
+{% endif %}
+{% endblock %}

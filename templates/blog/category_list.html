@@ -1,0 +1,15 @@
+﻿{% extends 'base.html' %}
+{% block title %}Категории{% endblock %}
+{% block content %}
+<h1>Категории</h1>
+<ul>
+    {% for category in categories %}
+        <li>
+            <a href="{% url 'blog:category_posts' category.slug %}">{{ category.name }}</a>
+            ({{ category.published_posts_count }})
+        </li>
+    {% empty %}
+        <li>Категорий пока нет.</li>
+    {% endfor %}
+</ul>
+{% endblock %}
