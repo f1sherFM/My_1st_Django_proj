@@ -230,3 +230,14 @@ class CategoryCreateTests(TestCase):
         self.assertRedirects(response, reverse("blog:category_list"))
         category = Category.objects.get(name="Data Science")
         self.assertEqual(category.slug, "data-science")
+
+
+class PostCategoryTests(TestCase):
+    def test_post_form_shows_hint_when_no_categories(self):
+        user = User.objects.create_user(username="writer2", email="writer2@example.com", password="pass12345")
+        self.client.login(username="writer2", password="pass12345")
+
+        response = self.client.get(reverse("blog:post_create"))
+
+        self.assertContains(response, "Сначала создайте хотя бы одну категорию")
+        self.assertContains(response, reverse("blog:category_create"))

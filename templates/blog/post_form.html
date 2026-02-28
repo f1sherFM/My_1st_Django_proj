@@ -5,7 +5,38 @@
 <h1>{% if form.instance.pk %}Редактирование поста{% else %}Создание поста{% endif %}</h1>
 <form method="post">
     {% csrf_token %}
-    {{ form.as_p }}
+    {{ form.non_field_errors }}
+
+    <p>
+        {{ form.title.label_tag }}<br>
+        {{ form.title }}
+        {{ form.title.errors }}
+    </p>
+    <p>
+        {{ form.slug.label_tag }}<br>
+        {{ form.slug }}
+        {{ form.slug.errors }}
+    </p>
+    <p>
+        {{ form.content.label_tag }}<br>
+        {{ form.content }}
+        {{ form.content.errors }}
+    </p>
+    <p>
+        {{ form.category.label_tag }}<br>
+        {{ form.category }}
+        {{ form.category.errors }}<br>
+        {% if form.no_categories %}
+            <small>Сначала создайте хотя бы одну категорию: <a href="{% url 'blog:category_create' %}">Создать категорию</a>.</small>
+        {% else %}
+            <small>Нет нужной категории? <a href="{% url 'blog:category_create' %}">Создать категорию</a>.</small>
+        {% endif %}
+    </p>
+    <p>
+        {{ form.is_published.label_tag }}
+        {{ form.is_published }}
+        {{ form.is_published.errors }}
+    </p>
     <button type="submit">Сохранить</button>
 </form>
 {% endblock %}

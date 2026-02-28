@@ -5,6 +5,13 @@ from .models import Category, Comment, Post
 
 
 class PostForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Явно сортируем категории, чтобы в форме был стабильный и удобный порядок выбора.
+        category_queryset = Category.objects.order_by("name")
+        self.fields["category"].queryset = category_queryset
+        self.no_categories = not category_queryset.exists()
+
     class Meta:
         model = Post
         fields = ("title", "slug", "content", "category", "is_published")
@@ -17,6 +24,12 @@ class PostForm(forms.ModelForm):
         if not slug:
             return ""
         return slugify(slug)[:200]
+
+    def clean(self):
+        cleaned_data = super().clean()
+        if self.no_categories:
+            raise forms.ValidationError("Сначала создайте хотя бы одну категорию.")
+        return cleaned_data
 
 
 class CommentForm(forms.ModelForm):
