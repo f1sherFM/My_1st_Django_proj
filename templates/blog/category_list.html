@@ -3,7 +3,7 @@
 {% block content %}
 <h1>Категории</h1>
 {% if user.is_authenticated %}
-    <p><a href="/category/create/">Добавить категорию</a></p>
+    <a href="/category/create/">Добавить категорию</a>
 {% endif %}
 <ul>
     {% for category in categories %}

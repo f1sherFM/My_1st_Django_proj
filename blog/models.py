@@ -1,5 +1,6 @@
 ﻿from django.conf import settings
 from django.db import models
+from django.urls import reverse
 from django.utils.text import slugify
 
 
@@ -49,6 +50,10 @@ class Post(models.Model):
 
     def __str__(self):
         return self.title
+
+    def get_absolute_url(self):
+        # Единый редирект после create/update: открываем созданный/обновленный пост.
+        return reverse("blog:post_detail", kwargs={"slug": self.slug})
 
     def save(self, *args, **kwargs):
         # Автослаг снижает количество ручных ошибок, а суффиксы решают коллизии без падений.
