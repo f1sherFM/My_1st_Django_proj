@@ -77,6 +77,64 @@ python manage.py test
 - модерацию комментариев,
 - admin bulk action для approve comments.
 
+## API (DRF + JWT)
+Базовый префикс: `/api/`
+
+Поиск в API работает через `?search=...` (не `q`).
+Списки в API возвращают стандартный формат пагинации DRF:
+- `count`
+- `next`
+- `previous`
+- `results`
+
+REST-статусы:
+- `POST` create -> `201`
+- `DELETE` -> `204`
+
+### Получение JWT токена
+```bash
+curl -X POST http://127.0.0.1:8000/api/auth/token/ ^
+  -H "Content-Type: application/json" ^
+  -d "{\"username\":\"admin\",\"password\":\"your_password\"}"
+```
+
+### Обновление access токена
+```bash
+curl -X POST http://127.0.0.1:8000/api/auth/token/refresh/ ^
+  -H "Content-Type: application/json" ^
+  -d "{\"refresh\":\"<your_refresh_token>\"}"
+```
+
+### Создание поста через API
+```bash
+curl -X POST http://127.0.0.1:8000/api/posts/ ^
+  -H "Authorization: Bearer <access_token>" ^
+  -H "Content-Type: application/json" ^
+  -d "{\"title\":\"API post\",\"content\":\"Body\",\"category\":1,\"is_published\":true}"
+```
+
+### Создание комментария через API
+```bash
+curl -X POST http://127.0.0.1:8000/api/posts/<post_slug>/comments/ ^
+  -H "Authorization: Bearer <access_token>" ^
+  -H "Content-Type: application/json" ^
+  -d "{\"text\":\"Отличный пост\"}"
+```
+
+### Список эндпоинтов API
+- `POST /api/auth/token/`
+- `POST /api/auth/token/refresh/`
+- `GET /api/posts/`
+- `POST /api/posts/`
+- `GET /api/posts/<slug>/`
+- `PATCH /api/posts/<slug>/`
+- `DELETE /api/posts/<slug>/`
+- `GET /api/categories/`
+- `GET /api/categories/<slug>/posts/`
+- `GET /api/posts/<slug>/comments/`
+- `POST /api/posts/<slug>/comments/`
+- `PATCH /api/comments/<id>/approve/` (staff)
+
 ---
 
 ## Карта проекта

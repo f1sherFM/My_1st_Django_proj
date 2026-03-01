@@ -12,6 +12,7 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     # Совместимость со старыми шаблонами без namespace: {% url 'category_create' %}.
     path("category/create/", CategoryCreateView.as_view(), name="category_create"),
+    path("api/", include("api.urls")),
     path("", include("accounts.urls")),
     path("", include("blog.urls")),
 ]
