@@ -3,6 +3,7 @@
 
 
 `skill_blog` — учебный, но production-like проект на Django 5.x: веб-интерфейс на шаблонах + REST API (DRF + JWT), с акцентом на читаемую архитектуру и корректные права доступа.
+Версия Python для запуска: **3.12+** (проверено на 3.13).
 
 ## Features
 - Кастомный пользователь (`accounts.User`) и профиль (`avatar`, `bio`, `created_at`).
@@ -208,3 +209,6 @@ Coverage: `97%` (`coverage run manage.py test; coverage report -m`).
 - Добавлен endpoint `GET /api/health/` (и тест).
 - Добавлен throttling в DRF-настройках.
 - Добавлен CI workflow на GitHub Actions (3.12/3.13).
+
+## Лицензия
+Проект распространяется под лицензией MIT. См. файл `LICENSE`.
