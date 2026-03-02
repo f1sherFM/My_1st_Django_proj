@@ -32,8 +32,7 @@ class PostListCreateAPIView(generics.ListCreateAPIView):
     search_fields = ("title", "content")
 
     def get_queryset(self):
-        queryset = super().get_queryset().filter(is_published=True)
-        return queryset
+        return super().get_queryset().filter(is_published=True)
 
     def get_serializer_class(self):
         if self.request.method == "GET":
@@ -73,6 +72,7 @@ class PostRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
 class CategoryListAPIView(generics.ListAPIView):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
+    permission_classes = [permissions.AllowAny]
 
 
 class CategoryPostsListAPIView(generics.ListAPIView):
