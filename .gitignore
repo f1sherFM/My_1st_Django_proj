@@ -7,3 +7,4 @@
 venv/
 media/
 .pytest_cache/
+.coverage

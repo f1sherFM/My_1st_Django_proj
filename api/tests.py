@@ -294,3 +294,11 @@ class ApiTests(APITestCase):
         self.assertIn("is_staff", response.data)
         self.assertIn("bio", response.data)
         self.assertIn("avatar", response.data)
+        self.assertIsNone(response.data["avatar"])
+
+    def test_health_endpoint_available_for_anonymous(self):
+        response = self.client.get(reverse("api:health"))
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["status"], "ok")
+        self.assertIn("django", response.data)

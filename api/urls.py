@@ -5,6 +5,7 @@ from .views import (
     CategoryListAPIView,
     CategoryPostsListAPIView,
     CommentApproveAPIView,
+    HealthAPIView,
     MeAPIView,
     PostCommentsListCreateAPIView,
     PostListCreateAPIView,
@@ -39,4 +40,5 @@ urlpatterns = [
         name="comment_approve",
     ),
     path("me/", MeAPIView.as_view(), name="me"),
+    path("health/", HealthAPIView.as_view(), name="health"),
 ]

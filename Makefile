@@ -1,4 +1,4 @@
-﻿.PHONY: install migrate run test check
+.PHONY: install migrate run test check lint format
 
 install:
 	pip install -r requirements.txt
@@ -14,3 +14,13 @@ test:
 
 check:
 	python manage.py check
+
+lint:
+	ruff check .
+	black --check .
+	isort --check-only .
+
+format:
+	black .
+	isort .
+	ruff check . --fix

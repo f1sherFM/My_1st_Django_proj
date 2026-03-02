@@ -1,6 +1,10 @@
-﻿from django.db.models import QuerySet
+﻿from django import get_version
+from django.db.models import QuerySet
 from django.shortcuts import get_object_or_404
 from rest_framework import generics, permissions
+from rest_framework.request import Request
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from accounts.models import User
 from blog.models import Category, Comment, Post
@@ -126,3 +130,11 @@ class MeAPIView(generics.RetrieveAPIView):
 
     def get_object(self) -> User:
         return self.request.user
+
+
+class HealthAPIView(APIView):
+    permission_classes = [permissions.AllowAny]
+
+    def get(self, request: Request) -> Response:
+        # Простой health endpoint удобен для smoke-check и мониторинга без доступа к приватным данным.
+        return Response({"status": "ok", "django": get_version(), "app": "skill_blog"})
