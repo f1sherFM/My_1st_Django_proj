@@ -1,4 +1,6 @@
 ﻿# Skill Blog (Django + DRF + JWT)
+[![CI](https://github.com/f1sherFM/My_1st_Django_proj/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/f1sherFM/My_1st_Django_proj/actions/workflows/ci.yml)
+
 
 `skill_blog` — учебный, но production-like проект на Django 5.x: веб-интерфейс на шаблонах + REST API (DRF + JWT), с акцентом на читаемую архитектуру и корректные права доступа.
 
