@@ -99,4 +99,13 @@ REST_FRAMEWORK = {
         "rest_framework.filters.SearchFilter",
         "django_filters.rest_framework.DjangoFilterBackend",
     ],
+    # Мягкие лимиты защищают API от спама и случайной перегрузки без влияния на обычную разработку.
+    "DEFAULT_THROTTLE_CLASSES": (
+        "rest_framework.throttling.AnonRateThrottle",
+        "rest_framework.throttling.UserRateThrottle",
+    ),
+    "DEFAULT_THROTTLE_RATES": {
+        "anon": "200/day",
+        "user": "2000/day",
+    },
 }

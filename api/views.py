@@ -1,37 +1,29 @@
-﻿from django.http import Http404
+﻿from django.db.models import QuerySet
 from django.shortcuts import get_object_or_404
 from rest_framework import generics, permissions
 
+from accounts.models import User
 from blog.models import Category, Comment, Post
 
 from .permissions import IsAuthorOrStaff
+from .selectors import get_visible_post_or_404
 from .serializers import (
     CategorySerializer,
     CommentApproveSerializer,
     CommentCreateSerializer,
     CommentSerializer,
+    MeSerializer,
     PostDetailSerializer,
     PostListSerializer,
     PostWriteSerializer,
 )
 
 
-def _check_post_visibility_or_404(post, user):
-    # Черновики не должны раскрывать факт существования для чужих пользователей.
-    if post.is_published:
-        return
-
-    if user.is_authenticated and (user.is_staff or user.id == post.author_id):
-        return
-
-    raise Http404("Post not found")
-
-
 class PostListCreateAPIView(generics.ListCreateAPIView):
     queryset = Post.objects.select_related("author", "category").order_by("-created_at")
     search_fields = ("title", "content")
 
-    def get_queryset(self):
+    def get_queryset(self) -> QuerySet[Post]:
         return super().get_queryset().filter(is_published=True)
 
     def get_serializer_class(self):
@@ -44,7 +36,7 @@ class PostListCreateAPIView(generics.ListCreateAPIView):
             return [permissions.IsAuthenticated()]
         return [permissions.AllowAny()]
 
-    def perform_create(self, serializer):
+    def perform_create(self, serializer: PostWriteSerializer) -> None:
         serializer.save(author=self.request.user)
 
 
@@ -62,9 +54,8 @@ class PostRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
             return [permissions.AllowAny()]
         return [permissions.IsAuthenticated(), IsAuthorOrStaff()]
 
-    def get_object(self):
-        post = get_object_or_404(self.get_queryset(), slug=self.kwargs["slug"])
-        _check_post_visibility_or_404(post, self.request.user)
+    def get_object(self) -> Post:
+        post = get_visible_post_or_404(self.request, self.kwargs["slug"])
         self.check_object_permissions(self.request, post)
         return post
 
@@ -79,24 +70,28 @@ class CategoryPostsListAPIView(generics.ListAPIView):
     serializer_class = PostListSerializer
     search_fields = ("title", "content")
 
-    def get_queryset(self):
+    def get_queryset(self) -> QuerySet[Post]:
         category = get_object_or_404(Category, slug=self.kwargs["slug"])
-        return Post.objects.filter(category=category, is_published=True).select_related("author", "category").order_by(
-            "-created_at"
+        return (
+            Post.objects.filter(category=category, is_published=True)
+            .select_related("author", "category")
+            .order_by("-created_at")
         )
 
 
 class PostCommentsListCreateAPIView(generics.ListCreateAPIView):
     search_fields = ()
 
-    def get_post(self):
-        post = get_object_or_404(Post.objects.select_related("author", "category"), slug=self.kwargs["slug"])
-        _check_post_visibility_or_404(post, self.request.user)
-        return post
+    def get_post(self) -> Post:
+        return get_visible_post_or_404(self.request, self.kwargs["slug"])
 
-    def get_queryset(self):
+    def get_queryset(self) -> QuerySet[Comment]:
         post = self.get_post()
-        return post.comments.filter(is_approved=True).select_related("author").order_by("created_at")
+        return (
+            post.comments.filter(is_approved=True)
+            .select_related("author")
+            .order_by("created_at")
+        )
 
     def get_serializer_class(self):
         if self.request.method == "GET":
@@ -108,9 +103,9 @@ class PostCommentsListCreateAPIView(generics.ListCreateAPIView):
             return [permissions.IsAuthenticated()]
         return [permissions.AllowAny()]
 
-    def perform_create(self, serializer):
+    def perform_create(self, serializer: CommentCreateSerializer) -> None:
         post = self.get_post()
-        # Комментарии в API идут через премодерацию так же, как и в HTML части.
+        # Комментарии идут через премодерацию, чтобы API и HTML-часть вели себя одинаково безопасно.
         serializer.save(author=self.request.user, post=post, is_approved=False)
 
 
@@ -119,3 +114,15 @@ class CommentApproveAPIView(generics.UpdateAPIView):
     serializer_class = CommentApproveSerializer
     permission_classes = [permissions.IsAdminUser]
     http_method_names = ["patch", "options"]
+
+    def perform_update(self, serializer: CommentApproveSerializer) -> None:
+        # Эндпоинт approve не доверяет входному body и всегда принудительно одобряет комментарий.
+        serializer.save()
+
+
+class MeAPIView(generics.RetrieveAPIView):
+    serializer_class = MeSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_object(self) -> User:
+        return self.request.user

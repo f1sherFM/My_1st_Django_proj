@@ -1,4 +1,4 @@
-﻿# Skill Blog
+﻿# Skill Blog (Django + DRF + JWT)
 
 `skill_blog` — учебный, но production-like проект на Django 5.x: веб-интерфейс на шаблонах + REST API (DRF + JWT), с акцентом на читаемую архитектуру и корректные права доступа.
 
@@ -12,6 +12,7 @@
 - REST API в отдельном приложении `api`.
 - JWT-аутентификация для API (`access/refresh`).
 - Пагинация и поиск в API (`search`, формат `count/next/previous/results`).
+- Endpoint `GET /api/me/` для получения профиля текущего пользователя в API-клиенте.
 
 ## Архитектурные решения
 - Почему отдельное приложение `api`:
@@ -22,7 +23,7 @@
   Новый комментарий сохраняется как `is_approved=False`, чтобы не публиковать спам/нежелательный контент сразу.
 
 ## Стек
-- Python 3.13+
+- Python 3.12+ (проверено на 3.13)
 - Django 5.x
 - SQLite
 - Django REST Framework
@@ -61,12 +62,16 @@
 ## Конфигурация окружения
 В репозитории есть файл `.env.example` с базовыми переменными.
 
-Важно: сейчас проект не читает `.env` автоматически (без `python-dotenv`), но файл служит шаблоном для CI/CD и деплоя.
+Для локального запуска переменные не обязательны: настройки по умолчанию берутся из `settings.py`.
+Для деплоя/CI файл служит шаблоном; подключение `dotenv` остаётся опциональным.
 
 ## API examples
 Базовый префикс: `/api/`
 
 Поиск в API: `?search=...`.
+Throttling включен:
+- `anon`: `200/day`
+- `user`: `2000/day`
 
 ### Получить JWT-токен
 ```bash
@@ -82,12 +87,18 @@ curl -X POST http://127.0.0.1:8000/api/auth/token/refresh/ \
   -d '{"refresh":"<refresh_token>"}'
 ```
 
+### Подготовить категорию для API-CRUD
+Перед созданием поста убедитесь, что есть категория, и возьмите её `id`:
+```bash
+python manage.py shell -c "from blog.models import Category; c,_=Category.objects.get_or_create(name='General', defaults={'slug':'general'}); print(c.id)"
+```
+
 ### Создать пост
 ```bash
 curl -X POST http://127.0.0.1:8000/api/posts/ \
   -H "Authorization: Bearer <access_token>" \
   -H "Content-Type: application/json" \
-  -d '{"title":"Пост через API","content":"Текст","category":1,"is_published":true}'
+  -d '{"title":"Пост через API","content":"Текст","category":<id_категории>,"is_published":true}'
 ```
 
 ### Создать комментарий
@@ -96,6 +107,12 @@ curl -X POST http://127.0.0.1:8000/api/posts/<post_slug>/comments/ \
   -H "Authorization: Bearer <access_token>" \
   -H "Content-Type: application/json" \
   -d '{"text":"Комментарий через API"}'
+```
+
+### Получить профиль текущего пользователя
+```bash
+curl -X GET http://127.0.0.1:8000/api/me/ \
+  -H "Authorization: Bearer <access_token>"
 ```
 
 ### Основные API endpoint'ы
@@ -111,6 +128,21 @@ curl -X POST http://127.0.0.1:8000/api/posts/<post_slug>/comments/ \
 - `GET /api/posts/<slug>/comments/`
 - `POST /api/posts/<slug>/comments/`
 - `PATCH /api/comments/<id>/approve/` (staff)
+- `GET /api/me/`
+
+## Code quality
+Проверка кода:
+```powershell
+ruff check .
+black --check .
+isort --check-only .
+```
+
+Автоформатирование:
+```powershell
+black .
+isort .
+```
 
 ## How to run tests
 Запустить все тесты:
@@ -122,6 +154,8 @@ python manage.py test
 ```powershell
 python manage.py test api.tests
 ```
+
+Coverage: `97%` (`coverage run manage.py test; coverage report -m`).
 
 ## Команды (Makefile)
 Если используешь `make`:
