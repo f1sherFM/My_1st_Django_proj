@@ -1,4 +1,4 @@
-﻿# Skill Blog (Django + DRF + JWT)
+# Skill Blog (Django + DRF + JWT)
 [![CI](https://github.com/f1sherFM/My_1st_Django_proj/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/f1sherFM/My_1st_Django_proj/actions/workflows/ci.yml)
 
 
@@ -88,7 +88,7 @@ curl -X POST http://127.0.0.1:8000/api/auth/token/ \
 ```bash
 curl -X POST http://127.0.0.1:8000/api/auth/token/refresh/ \
   -H "Content-Type: application/json" \
-  -d '{"refresh":"<refresh_token>"}'
+  -d '{"refresh":"<REFRESH_TOKEN>"}'
 ```
 
 ### Health-check
@@ -104,15 +104,15 @@ python manage.py shell -c "from blog.models import Category; c,_=Category.object
 ### Создать пост
 ```bash
 curl -X POST http://127.0.0.1:8000/api/posts/ \
-  -H "Authorization: Bearer <access_token>" \
+  -H "Authorization: Bearer <ACCESS_TOKEN>" \
   -H "Content-Type: application/json" \
-  -d '{"title":"Пост через API","content":"Текст","category":<id_категории>,"is_published":true}'
+  -d '{"title":"Пост через API","content":"Текст","category":<CATEGORY_ID>,"is_published":true}'
 ```
 
 ### Создать комментарий
 ```bash
-curl -X POST http://127.0.0.1:8000/api/posts/<post_slug>/comments/ \
-  -H "Authorization: Bearer <access_token>" \
+curl -X POST http://127.0.0.1:8000/api/posts/<POST_SLUG>/comments/ \
+  -H "Authorization: Bearer <ACCESS_TOKEN>" \
   -H "Content-Type: application/json" \
   -d '{"text":"Комментарий через API"}'
 ```
@@ -120,7 +120,7 @@ curl -X POST http://127.0.0.1:8000/api/posts/<post_slug>/comments/ \
 ### Профиль текущего пользователя
 ```bash
 curl -X GET http://127.0.0.1:8000/api/me/ \
-  -H "Authorization: Bearer <access_token>"
+  -H "Authorization: Bearer <ACCESS_TOKEN>"
 ```
 
 ### Основные API endpoint'ы

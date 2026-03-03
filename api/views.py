@@ -1,4 +1,4 @@
-﻿from django import get_version
+from django import get_version
 from django.db.models import QuerySet
 from django.shortcuts import get_object_or_404
 from rest_framework import generics, permissions
